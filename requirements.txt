@@ -1,0 +1,14 @@
+# Core libraries
+motor                 # Async MongoDB driver
+pymongo               # MongoDB base driver
+redis                 # Redis client
+celery                # Background task queue
+pydantic              # Data modeling & validation
+python-dotenv         # .env loading
+httpx                 # Async HTTP client
+
+# Testing
+pytest                # Test runner
+pytest-asyncio        # Async support for pytest
+
+matplotlib

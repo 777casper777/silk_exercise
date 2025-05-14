@@ -1,0 +1,42 @@
+services:
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:7.0
+    ports:
+      - "6379:6379"
+
+  api:
+    build: .
+    environment:
+      - PYTHONPATH=/app
+    command: python app/main.py
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+      - redis
+
+  worker:
+    build: .
+    environment:
+      - PYTHONPATH=/app
+    command: celery -A app.tasks.fetch_and_process worker --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+      - redis
+
+
+volumes:
+  mongo-data:
