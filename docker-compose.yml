@@ -5,11 +5,14 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    command: ["mongod", "--quiet"]
 
   redis:
     image: redis:7.0
     ports:
       - "6379:6379"
+    #volumes:
+    #  - redis-data:/data
 
   api:
     build: .
@@ -37,6 +40,6 @@ services:
       - mongo
       - redis
 
-
 volumes:
   mongo-data:
+  redis-data:

@@ -114,8 +114,8 @@ Returns list of fetchers
 ────────────────────────────────────────────────────────
 Loop:
 for fetcher in fetchers:
-    async for host in fetcher.fetch_hosts():
-        raw_hosts.append(host)
+    async for raw_host in fetcher.fetch_hosts():
+        process_host(raw_host)
 ────────────────────────────────────────────────────────
              ↓
 → First: QualysFetcher.fetch_hosts()
@@ -148,10 +148,14 @@ Function: _fetch_page(self, skip, limit)
 🎯 Final result: raw host dicts from all sources
 
              ↓
-Then:
+Then (per host):
 - normalize_* → convert to UnifiedHost
-- deduplicate_hosts()
-- bulk_upsert_hosts() → insert into MongoDB
+- Check Redis:
+    → if key exists → skip
+    → else:
+        - store key in Redis (with TTL if enabled)
+        - upsert_host() → insert/update in MongoDB
+
 ```
 
 ## 🔄 Celery + Redis Event Loop
@@ -160,8 +164,8 @@ Here’s how they interact:
 
 ```text
 ──────────────────────────────────────────────────────
-│     Docker Compose starts all project services       │
-│ worker: celery -A app.tasks.fetch_and_process ...    │
+│ Docker Compose starts all project services          │
+│ worker: celery -A app.tasks.fetch_and_process ...   │
 └────────────────────────────┬────────────────────────┘
                              ↓
 Celery worker starts with module app.tasks.fetch_and_process
@@ -171,11 +175,13 @@ Celery worker starts with module app.tasks.fetch_and_process
 asyncio.run(_run_async_pipeline())
                              ↓
 Main pipeline steps:
-→ load_fetchers()          # Load API clients
-→ fetch_hosts()            # Asynchronous data collection from APIs
-→ normalize                # Normalize to unified format
-→ deduplicate              # Remove duplicates
-→ bulk_upsert              # Save to MongoDB
+→ load_fetchers()          # Dynamically load all active fetchers
+→ fetch_hosts()            # Asynchronously collect data page-by-page
+→ normalize                # Convert raw data to UnifiedHost objects
+→ Redis check              # Perform deduplication via Redis key
+→ if new:
+    → Store Redis key
+    → upsert_host()        # Insert or update in MongoDB
 
 ```
 ## 🚀 Getting Started
