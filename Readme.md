@@ -56,7 +56,7 @@ project/
 │
 │   └── utils/                    # General utilities
 │       ├── pagination.py         # Pagination helper for APIs
-│       └── config.py             # Duplicate of app-level config (can merge)
+│       
 │
 ├── tests/                        # Pytest test cases
 │   ├── test_normalizer.py        # Tests for normalize functions
