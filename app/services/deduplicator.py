@@ -1,4 +1,6 @@
-# app/services/deduplicator.py
+# Legacy deduplication logic (deprecated)
+# Replaced by Redis-based global deduplication in fetch_and_process.py
+
 from typing import List
 from app.models.unified_host import UnifiedHost
 

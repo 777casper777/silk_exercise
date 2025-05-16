@@ -48,7 +48,6 @@ project/
 │
 │   ├── services/                 # Business logic
 │   │   ├── normalizer.py         # Vendor-specific normalization
-│   │   ├── deduplicator.py       # Host deduplication logic
 │   │   └── persistence.py        # MongoDB insert/update logic
 │
 │   ├── tasks/                    # Background tasks (e.g., Celery)
@@ -60,7 +59,6 @@ project/
 │
 ├── tests/                        # Pytest test cases
 │   ├── test_normalizer.py        # Tests for normalize functions
-│   ├── test_deduplicator.py      # Tests for deduplication logic
 │   ├── test_persistence.py       # Tests MongoDB upsert
 │   └── test_upsert_real.py       # Real upsert tests against live DB
 │
