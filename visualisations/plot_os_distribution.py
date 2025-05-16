@@ -4,13 +4,12 @@ from collections import Counter
 import os
 import textwrap
 
-# Подключение к MongoDB
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://mongo:27017")
 client = MongoClient(MONGO_URL)
 collection = client["host_db"]["hosts"]
 
 def shorten_os_name(os_name: str) -> str:
-    """Обрезает или упрощает длинные имена ОС"""
+    """Trims or simplifies long OS names"""
     if not os_name:
         return "Unknown"
     if "Windows" in os_name:
@@ -22,7 +21,7 @@ def shorten_os_name(os_name: str) -> str:
 def main():
     hosts = list(collection.find())
     if not hosts:
-        print("⚠ No data found in collection 'hosts'.")
+        print("⚠ No data found in the 'hosts' collection.")
         return
 
     os_counter = Counter(shorten_os_name(h.get("os")) for h in hosts)
@@ -30,11 +29,11 @@ def main():
         print("⚠ No valid 'os' data to display.")
         return
 
-    # Оборачиваем длинные названия
+    # Wrap long OS names
     labels = [textwrap.fill(label, width=20) for label in os_counter.keys()]
     values = list(os_counter.values())
 
-    # Построение графика
+    # Plot the chart
     plt.figure(figsize=(10, 6))
     plt.bar(labels, values, color="skyblue")
     plt.title("OS Distribution of Hosts")

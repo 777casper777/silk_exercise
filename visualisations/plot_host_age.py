@@ -3,7 +3,6 @@ from pymongo import MongoClient
 from datetime import datetime, timedelta
 import os
 
-# Используем переменную окружения или дефолтный адрес (для Docker)
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://mongo:27017")
 client = MongoClient(MONGO_URL)
 collection = client["host_db"]["hosts"]
