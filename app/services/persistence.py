@@ -9,6 +9,19 @@ client = AsyncIOMotorClient(MONGO_URI)
 db = client["host_db"]
 collection = db["hosts"]
 
+
+async def ensure_indexes():
+    indexes = await collection.index_information()
+    if "host_identity_idx" in indexes:
+        await collection.drop_index("host_identity_idx")
+
+    await collection.create_index(
+        [("hostname", 1), ("ip_address", 1), ("vendor", 1)],
+        name="host_identity_idx",
+        unique=True
+    )
+
+
 async def upsert_host(host: UnifiedHost):
     query = {
         "hostname": host.hostname,

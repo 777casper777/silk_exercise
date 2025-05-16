@@ -9,6 +9,7 @@ from app.loader import load_fetchers
 from app.services.normalizer import normalize_qualys, normalize_crowdstrike
 from app.services.persistence import upsert_host
 from app.models.unified_host import UnifiedHost
+from app.services.persistence import ensure_indexes
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ def run_pipeline():
 
 
 async def _run_async_pipeline():
+    await ensure_indexes()
     fetchers = load_fetchers()
     redis = Redis.from_url(REDIS_URL)
     await redis.ping()
